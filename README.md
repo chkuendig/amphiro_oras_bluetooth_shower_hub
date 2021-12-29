@@ -3,6 +3,7 @@
 This application is reading your Amphiro/Oras Digital Shower head for **water consumption**, **water temperature** and **shower length** and passes that data forward as MQTT.
 You can point those MQTT messages to your favorite datalogging service for storage and visualization.
 
+I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux should work.
 
 ![title.png](images/title_small.png)
 
@@ -13,9 +14,18 @@ You can point those MQTT messages to your favorite datalogging service for stora
 - Edit your MQTT credentials into **config.ini** file.
 - Enable/disable file logging and/or MQTT from **config.ini file.
 
+## Prerequisites and libraries needed
+
+- You need to have **Python3** installed
+  - Install with `sudo apt-get install python3` in rasbian.
+- make sure following python libraries are installed:
+  - **paho-mqtt**  (Install with: `pip3 install paho-mqtt`)
+  - **bluepy** (Install with: `pip3 install bluepy`)
+
+
 ## Running this application
 
-Run the following command:
+Run the following command (assumes GIT cloned to /home/pi/ ):
 ```
 ./read_Ampiro_shower.sh
 ```
