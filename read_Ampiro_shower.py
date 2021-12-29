@@ -1,7 +1,4 @@
 #!/usr/bin/python3
-import json
-import mqtt
-
 import sys
 import binascii
 import struct
@@ -9,14 +6,18 @@ from time import sleep
 import time
 from datetime import datetime
 
-import string
-import random
+import FileWriter
+import MQTTWriter
 
 import configparser
-config="config.ini"
 
 from bluepy.btle import UUID, Peripheral
 from bluepy.btle import BTLEDisconnectError
+
+configFile="config.ini"
+
+# All data writer objects will be initialized in here
+writers = []
 
 # Error counter is used to track how many disconnections in a row we are getting.
 errorCounter = 0
@@ -32,48 +33,24 @@ uuids={
 
 print( datetime.now() )
 
-print("Using config file ["+config+"] ", end="")
-
-def log( line ):
-  if ( data_object != None):
-    data_object.write(line+"\n")
-  print( line )
-
+print("Using config file ["+configFile+"] ", end="")
 
 # Settings. Read configuration file
 Config = configparser.ConfigParser()
-Config.read(config)
-
-# Read MQTT settings and init mqtt client with it.
-mqtt_host= Config.get("mqtt", "mqtt_host")
-mqtt_port= Config.getint("mqtt", "mqtt_port")
-mqtt_username= Config.get("mqtt", "mqtt_username")
-mqtt_password= Config.get("mqtt", "mqtt_password")
-mqtt_enabled = False;
-
-# Check if mqtt logging is enabled in config file
-if ( Config.get("mqtt", "mqtt_enabled").lower() in ['true', '1', 't', 'y', 'yes']):
-  mqtt_enabled = True;
+Config.read(configFile)
 
 # Get MAC address from config file.
 MAC_ADDRESS= Config.get("general", "shower_mac_address")
 
-# Get backup file name from config and  intialize it.
-dumpfile=""
-data_object=None
-if ( Config.has_option("general", "datafile") ):
-  dumpfile=Config.get("general", "datafile")
-  data_object = open( dumpfile, 'a')
+print("General settings[mac:" + MAC_ADDRESS + "] ", end="");
 
-print("General settings[mac:" + MAC_ADDRESS + " file:" + dumpfile  + "] ", end="");
-print("MQTT-settings[" + mqtt_host + ":" + str(mqtt_port) + " " + mqtt_username+"]")
-print()
+# Initialize file writer
+if ( Config.get("general", "write_to_file").lower() in ['true', '1', 't', 'y', 'yes']):
+	writers.append( FileWriter.FileWriter(Config) )
 
-# Create random clientId for mqtt connection. (Must be unique inside Broker)
-mqttClientId ="shower_mqtt_".join(random.choice(string.ascii_lowercase) for i in range(5))
-
-# Initialize MQTT and Initialize connection
-if (mqtt_enabled): mqttc = mqtt.MqttClient( mqtt_host, mqtt_port, mqtt_username, mqtt_password, mqttClientId )
+# Check if mqtt logging is enabled in config file
+if ( Config.get("general", "mqtt_enabled").lower() in ['true', '1', 't', 'y', 'yes']):
+	writers.append( MQTTWriter.MQTTWriter(Config) )
 
 ############ MAIN LOOP HERE ####################
 
@@ -93,7 +70,6 @@ try:
 
    # Just doing some double checking to make sure we got correct UUID's
    if ( chStatus.supportsRead() and chFlow.supportsRead() ):
-       data = {}
 
        previousLiters = 0
 
@@ -134,6 +110,7 @@ try:
 		# READ FLOW UUID
                 binvalFlow = chFlow.read()
                 valFlow = binascii.b2a_hex(binvalFlow)
+
 		# Construct v2 containing spaced out representation of the raw data
                 v2  = ""
                 v2 += str(valFlow)[0:6] + " "
@@ -146,49 +123,27 @@ try:
                 v2 += str(valFlow)[14:18] + " "
                 v2 += str(valFlow)[18:]
 
-                # print( "  size=("+str(len(binvalStatus))+") ", end="")
-                # print ("  0x"+ format(ch.getHandle(),'02X')  +"   "+str(ch.uuid) +" " + ch.propertiesToString() )
-
-		# Construct data and datavalue Dictionaries that will be sent to MQTT
-                datavalue={}
-                datavalue["second"]=secs
-                datavalue["count"]=startCounter
-                datavalue["temp"]=temp
-                datavalue["kwatts"]=kwatts
-                datavalue["pulses"]=pulses
-                datavalue["liters"]=pulses/2560
-                datavalue["liters_delta"]= round( (pulses/2560) - previousLiters, 2)
-                datavalue["flow"]=round( flow/1220, 2 )
-                datavalue["f_c"]=flow
-                datavalue["a"]=a
-                datavalue["b"]=b
-
-                data = {}
-                data["utc"] = int(time.time()) # Absolute UTC EPOCH TIME for MQTT
+		# Construct Data Dictionary object that will be passed to all available Writers
+                data = {};
+                data["utc"] = int(time.time())
                 data["sensor"] = "shower"
-                data['value'] = datavalue
+                data["session"]=startCounter
+                data["second"]=secs
+                data["temp"]=temp
+                data["kwatts"]=kwatts
+                data["pulses"]=pulses
+                data["liters"]=round( pulses/2560, 2)
+                data["liters_delta"]= round( (pulses/2560) - previousLiters, 2)
+                data["flow"]=round( flow/1220, 2 )
+                data["f_c"]=flow
+                data["a"]=a
+                data["b"]=b
 
 		# Save current listers to "previous liters" so we can calculate delta liters on next round
                 previousLiters = pulses/2560
 
-                # print(data)
-
-                line = json.dumps(data)
-                print("- publishing MQTT:"+line+" ", end="")
-                log( "--" + str(datetime.now()) + "--" )
-                log( "1# " + v1 )
-                log( "2# " + v2 )
-                log( "3# " + line )
-                log( "" );
-
-
-                if (mqtt_enabled): mqttc.publish( "shower", line )
-
-                #print ( "-count:" + str(val)[0:8] + " [" + str(startCounter) +"]" )
-                #print ( "-temp:" + str(val)[30:32] + " [" + str(temp) + "]°C" )
-                #print ( "-Watts:" + str(val)[26:30] + " [" + str(kwatts) + "]kWh" )
-                #print ( "-Pulses:" + str(val)[26:30] + " [" + str(pulses) + "] -> [" + str(pulses/2560) + "]liters" )
-                # print ( "-a:" + str(val)[14:18] + " [" + str(a) + "]")
+                for i in range(len(writers)):
+                   writers[i].write(data, v1, v2)
 
                 print("sleeping", end="")
                 for x in range(5):
@@ -209,7 +164,6 @@ try:
       print("[" + str(err) + "] ", end="")
       print("Shower seems to be offline. Sleeping for 60 seconds and trying to connect again.")
       sleep(60)
-
 
 #  except BaseException as err:
 #      print(err)
