@@ -5,6 +5,7 @@ You can point those MQTT messages to your favorite datalogging service for stora
 
 
 ![shower_head.jpg](images/shower_head_small.jpg)
+![example.jpg](images/example_shower_data_in_grafana.jpg)
 
 ## Installation and configuration
 
