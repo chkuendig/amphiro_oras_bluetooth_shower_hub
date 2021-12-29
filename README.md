@@ -41,7 +41,7 @@ Or do the same thing manually:
 ## Running this application
 
 Run the following command:
-_(Ready made shell script assumes this GIT cloned to /home/pi/)_
+_(Script assumes this GIT is cloned to /home/pi/ )_
 ```
 ./read_Ampiro_shower.sh
 ```
@@ -61,7 +61,6 @@ This will make sure that application is executed 20 seconds after reboot. (20 se
 # Roadmap
 
 Ideas to be implemented in the future:
-- Create "setup script" that will scan and find your Bluetooth shower head and automatically store it's MAC into settings.
 - Calculate your cumulated daily water consumption and add it into outgoing MQTT-messages
 
 ## License
