@@ -1,7 +1,7 @@
 # Hub application for Amphiro/Oras Digital shower head
 
-This application is reading your Amphiro/Oras Digital Shower head for **water consumption**, **water temperature** and **shower length** and passes that data forward as MQTT.
-You can point those MQTT messages to your favorite datalogging service for storage and visualization.
+This application is reading your Amphiro/Oras Digital Shower head for **water consumption**, **water flow(l/min), **water temperature** and **shower length**. That data can be sent forward as MQTT or written into file.
+You can point MQTT messages to your favorite datalogging service for storage and visualization.
 
 I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux should work.
 
