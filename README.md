@@ -16,6 +16,11 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 
 ## Prerequisites and libraries needed
 
+You can just run helper script that will check and install all the required libraries.
+`./check_and_install_prerequisites.sh`
+
+Or do the same thing manually:
+
 - You need to have **Python3** installed
   - Install with `sudo apt-get install python3` in rasbian.
 - make sure following python libraries are installed:
@@ -46,8 +51,7 @@ This will make sure that application is executed 20 seconds after reboot. (20 se
 # Roadmap
 
 Ideas to be implemented in the future:
-- Create "setup application" that will check needed libraries.
-- Create installation script that will scan and find your Bluetooth shower head and automatically store it's MAC into settings.
+- Create "setup script" that will scan and find your Bluetooth shower head and automatically store it's MAC into settings.
 - Calculate your cumulated daily water consumption and add it into outgoing MQTT-messages
 
 ## License
