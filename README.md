@@ -3,6 +3,9 @@
 This application is reading your Amphiro/Oras Digital Shower head for **water consumption**, **water temperature** and **shower length** and passes that data forward as MQTT.
 You can point those MQTT messages to your favorite datalogging service for storage and visualization.
 
+
+![shower_head.jpg](images/shower_head_small.jpg)
+
 ## Installation and configuration
 
 - Clone this GIT repository
