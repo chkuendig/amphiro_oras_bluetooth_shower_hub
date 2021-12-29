@@ -10,9 +10,11 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 ## Installation and configuration
 
 - Clone this GIT repository
+- Find your showers mac address by running `sudo python3 find_my_shower.py`
+   -  Or you can get the mac address from shower mobile app.
 - Add your shower heads MAC Adress into **config.ini** file.
 - Edit your MQTT credentials into **config.ini** file.
-- Enable/disable file logging and/or MQTT from **config.ini file.
+- Enable/disable file logging and MQTT from **config.ini** file.
 
 ## Prerequisites and libraries needed
 
