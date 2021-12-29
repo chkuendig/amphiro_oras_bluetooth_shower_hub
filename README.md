@@ -14,7 +14,6 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 - run `./read_Ampiro_shower.sh` to start collecting data from your shower
 
 
-Longer installation below ...
 
 ## Installation and configuration
 
