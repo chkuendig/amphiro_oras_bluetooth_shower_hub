@@ -4,8 +4,7 @@ This application is reading your Amphiro/Oras Digital Shower head for **water co
 You can point those MQTT messages to your favorite datalogging service for storage and visualization.
 
 
-![shower_head.jpg](images/shower_head_small.jpg)
-![example.jpg](images/example_shower_data_in_grafana.jpg)
+![title.png](images/title_small.png)
 
 ## Installation and configuration
 
