@@ -10,7 +10,7 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 
 # Quick setup
 - run `./check_and_install_prerequisites.sh` to install all needed libraries
-- run `sudo python3 find_my_shower.py` to find out showers mac address
+- run `sudo python3 setup.py` to find out showers mac address
 - add showers mac address into **config.ini** 
 - run `./read_Ampiro_shower.sh` to start collecting data from your shower
 
@@ -20,7 +20,7 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 ## Installation and configuration
 
 - Clone this GIT repository
-- Find your showers mac address by running `sudo python3 find_my_shower.py`
+- Find your showers mac address by running `sudo python3 setup.py`
    -  Or you can get the mac address from shower mobile app.
 - Add your shower heads MAC Adress into **config.ini** file.
 - Edit your MQTT credentials into **config.ini** file.
