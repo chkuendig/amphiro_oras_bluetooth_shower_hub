@@ -5,6 +5,7 @@ import time
 import struct
 import sys
 import os
+from os.path import exists
 
 if os.geteuid() != 0:
     exit("You need to have root privileges to run Bluetooth scanner.\nPlease try again, this time using 'sudo'. Exiting.")
@@ -20,6 +21,23 @@ class ScanDelegate(DefaultDelegate):
         DefaultDelegate.__init__(self)
 
 scanner = Scanner().withDelegate(ScanDelegate())
+
+def initConfigFile(macAddress):
+  print("Creating config.ini file for you, with your mac["+str(macAddress)+"]");
+
+  f = open("config.ini.default", "r")
+  configData = f.read()
+  newConfigData = configData.replace("00:11:22:33:44:55", str(macAddress) );
+
+  f2 = open("config.ini", "w")
+  f2.write( newConfigData )
+  f2.close()
+
+# Check if this setup has already been executed. (We'll try to protect the config.ini with this checking.)
+if (exists("config.ini") ):
+  print("config.ini file already created!")
+  print("Please delete it if you want to rerun setup again.")
+  sys.exit(0)
 
 print("Remember to turn on the water. Running water will turn on your shower head.")
 print("Searching for Bluetooth shower head:", end="", flush=True)
@@ -45,7 +63,9 @@ try:
                 #Try to find by manufacturer data
                 if ((ManuDataHex[0] == 0xee) and (ManuDataHex[1] == 0xfa)):
                     # print ("Amphiro:" ,dev.addr , ", RSSI=",dev.rssi," dB")
-                    print("\nBluetooth shower head found at["+dev.addr+"]. Add this mac address to config.ini")
+                    print("Bluetooth shower head found at["+dev.addr+"].\n")
+                    initConfigFile( dev.addr );
+                    print("Remember to change MQTT credentials from config.ini to match your settings.")
                     sys.exit(0)
                 else:
                     # print( "Other device[" + str(ManuDataHex[0]) + ":" + str(ManuDataHex[1]) + "] ",dev.addr," RSSI=",dev.rssi," dB")
