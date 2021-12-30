@@ -1,6 +1,7 @@
 # Hub application for Amphiro/Oras Digital shower head
 
-This application is reading your Amphiro/Oras Digital Shower head for **water consumption**, **water flow(l/min), **water temperature** and **shower length**. That data can be sent forward as MQTT or written into file.
+This application is reading your Amphiro/Oras Digital Shower head for **water consumption**, **water flow(l/min)** , **water temperature** and **shower length**. That data can be sent forward as MQTT or written into a file.
+
 You can point MQTT messages to your favorite datalogging service for storage and visualization.
 
 I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux should work.
@@ -63,6 +64,38 @@ This will make sure that application is executed 20 seconds after reboot. (20 se
 
 Ideas to be implemented in the future:
 - Calculate your cumulated daily water consumption and add it into outgoing MQTT-messages
+
+# Protocol description of Amphiro / Oras bluetooth shower
+
+Shower is exposing standard BLE interface accessible freely with any BLE application.
+
+## UUID's
+There are several plain text UUID's exposed by the device.
+Here are the most interesting one's:
+
+| name    | UUID          | Example value | Explanation |
+| ------- | ------------- | ------------- | ----------- |
+| name    | 00002a29-0000-1000-8000-00805f9b34fb  | "Amphiro"  | Plain text value of the manufacturer |
+| version | 00002a26-0000-1000-8000-00805f9b34fb  | "13.2"     | Version number of the software       |
+| **status**  | 7f402203-504f-4c41-5261-6d706869726f  | HEX-value  | Binary blob. This status field contain most of the interesting info |
+| **flow**    | 7f40c00f-504f-4c41-5261-6d706869726f | HEX-value   | Binary blob. Water flow is encoded into this data blob.
+
+### status field ###
+**Status field**  contains **single binary data blob** that seems to contain most of the interesting values encoded into it.
+
+In this example *Status-field* value is presented in HEX.
+When UUID was read value "000014004e060048002b2410000319410000" was returned.
+
+#### Binary data explained ####
+| Example 1        |                |       |    |       |        |             |        |             |              |
+| ---------------- | -------------- | ----- | -- | ----- | ------ | ----------- | ------ | ----------- | ------------ |
+| Example hex data | 000014         | 004e  | 06 | 0048  | 002b24 | 10          | 0003   | 19          | 410000       |
+| Value as Dec     |                |       |    |       |        |             |        |             |              |
+| Explanation      | SessionCounter | timeA | A  | timeB | Pulses | Temperature | kWatts | B (static?) | C (Static ?) |
+|                  | Field is increasing number of how many times shower is turned on. If you turn shower off and back on, then this counter is not increased. So it tries to follow how many showers has been taken. | Shower time in seconds. | Fields purpose unknown. Value seems to start from 0 or 1. Then sometimes increase up to 6. | This value is almost the same as TimeA, but sometimes a bit lower. Might indicate the time of actual water flowing. | Pulse counter how much water is used. **Divide this value with 2560** and you get liters consumed  | Temperature in Celcius degrees. Doesn't have decimals. | **Divide this value with 100** and you get kW value calculated by the shower.  | unknown. Seems to be static "0x19"  | unknown. Seems to be static "0x410000" |
+
+### flow field ###
+
 
 ## License
 This application is licensed under **[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)**
