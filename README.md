@@ -10,8 +10,7 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 
 # Quick setup
 - run `./check_and_install_prerequisites.sh` to install all needed libraries
-- run `sudo python3 setup.py` to find out showers mac address
-- add showers mac address into **config.ini** 
+- run `sudo python3 setup.py` to find out your showers mac address and create default **config.ini** for you.
 - run `./read_Ampiro_shower.sh` to start collecting data from your shower
 
 
