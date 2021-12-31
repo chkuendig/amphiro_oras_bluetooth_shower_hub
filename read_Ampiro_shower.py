@@ -13,6 +13,7 @@ import configparser
 
 from bluepy.btle import UUID, Peripheral
 from bluepy.btle import BTLEDisconnectError
+from bluepy.btle import BTLEInternalError
 
 configFile="config.ini"
 
@@ -39,12 +40,16 @@ print("Using config file ["+configFile+"] ", end="")
 Config = configparser.ConfigParser()
 Config.read(configFile)
 
-# Get MAC address from config file.
-MAC_ADDRESS= Config.get("general", "shower_mac_address")
+# Get Showers ID from config file.
 SHOWER_ID = Config.get("general", "shower_name")
 
-print("General settings[mac:" + MAC_ADDRESS + " id:"+SHOWER_ID+"] ", end="");
+# Read shower MAC address and remove possible white space from config
+MAC_ADDRESSES= Config.get("general", "shower_mac_addresses").split(",")
+for i in range(len(MAC_ADDRESSES)):
+  mac = MAC_ADDRESSES[i].strip()
+  MAC_ADDRESSES[i] = mac
 
+print("General settings[mac:" +str(MAC_ADDRESSES) + " id:"+SHOWER_ID+"] ", end="");
 
 try:
  # Initialize file writer
@@ -60,18 +65,22 @@ try:
 
  while(True):
 
-  try:
-   print("Connecting: ", flush=True,end="")
-   p = Peripheral( MAC_ADDRESS,"public")
-   chStatus = p.getCharacteristics( uuid= uuids["status"] )[0]
-   chFlow   = p.getCharacteristics( uuid= uuids["flow"]   )[0]
-   print("")
+ # Loop all shower heads
+  for s in range(len(MAC_ADDRESSES)):
+   MAC_ADDRESS = MAC_ADDRESSES[s]
 
-   # Connection established if we got here. Reset error counter.
-   errorCounter = 0
+   try:
+    print("Connecting["+str(s)+"][" + MAC_ADDRESS + "]: ", flush=True,end="")
+    p = Peripheral( MAC_ADDRESS,"public")
+    chStatus = p.getCharacteristics( uuid= uuids["status"] )[0]
+    chFlow   = p.getCharacteristics( uuid= uuids["flow"]   )[0]
+    print("")
 
-   # Just doing some double checking to make sure we got correct UUID's
-   if ( chStatus.supportsRead() and chFlow.supportsRead() ):
+    # Connection established if we got here. Reset error counter.
+    errorCounter = 0
+
+    # Just doing some double checking to make sure we got correct UUID's
+    if ( chStatus.supportsRead() and chFlow.supportsRead() ):
 
        previousLiters = 0
 
@@ -129,6 +138,7 @@ try:
                 data = {};
                 data["utc"] = int(time.time())
                 data["sensor"] = SHOWER_ID
+                data["mac"] = MAC_ADDRESS.replace(":","_")
                 data["session"]=startCounter
                 data["second"]=secs
                 data["temp"]=temp
@@ -153,19 +163,19 @@ try:
                   sleep(1)
                 print("")
 
-  except (BTLEDisconnectError,IOError) as err:
-    print("BLE Connection failed["+type(err).__name__+"]. ")
-    errorCounter +=1
+   except (BTLEDisconnectError,BTLEInternalError,IOError) as err:
+     print("BLE Connection failed["+type(err).__name__+"]. ")
+     errorCounter +=1
 
-    if (errorCounter < 10 ):
-      print("Reconnecting in 5 seconds", flush=True, end="")
-      for x in range(5):
+     if (errorCounter < 10 ):
+       print("Reconnecting in 5 seconds", flush=True, end="")
+       for x in range(5):
          print(".", flush=True, end="")
          sleep(1)
-    else:
-      print("[" + str(err) + "] ", end="")
-      print("Shower seems to be offline. Sleeping for 60 seconds and trying to connect again.")
-      sleep(60)
+     else:
+       print("[" + str(err) + "] ", end="")
+       print("Shower seems to be offline. Sleeping for 60 seconds and trying to connect again.")
+       sleep(60)
 
 #  except BaseException as err:
 #      print(err)

@@ -39,6 +39,6 @@ class MQTTWriter(AbstractWriter):
     # Write data to writers target (This is abstract method that is used to write data.)
     def write(self, dataDict, rawData1, rawData2 ):
            # Construct data and datavalue Dictionaries that will be sent to MQTT
-           line = self.mqtt_template.substitute(sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], f_c=dataDict["f_c"], a=dataDict["a"], b=dataDict["b"] )
+           line = self.mqtt_template.substitute(mac=dataDict["mac"],sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], f_c=dataDict["f_c"], a=dataDict["a"], b=dataDict["b"] )
            print("- publishing MQTT:"+line+" ", end="")
            self.mqttc.publish( "shower", line )

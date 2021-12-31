@@ -7,7 +7,8 @@ output_file=dump.txt
 mqtt_enabled=true
 
 # Type mac address of your Amphiro Bluetooth Shower
-shower_mac_address=00:11:22:33:44:55
+# (You can also list multiple mac addresses separated with comma)
+shower_mac_addresses=00:11:22:33:44:55
 
 # Id of your shower in MQTT messages. You only need to change this if you have multiple shower heads.
 shower_name=shower1
