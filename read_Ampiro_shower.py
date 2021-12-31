@@ -41,20 +41,22 @@ Config.read(configFile)
 
 # Get MAC address from config file.
 MAC_ADDRESS= Config.get("general", "shower_mac_address")
+SHOWER_ID = Config.get("general", "shower_name")
 
-print("General settings[mac:" + MAC_ADDRESS + "] ", end="");
+print("General settings[mac:" + MAC_ADDRESS + " id:"+SHOWER_ID+"] ", end="");
 
-# Initialize file writer
-if ( Config.get("general", "write_to_file").lower() in ['true', '1', 't', 'y', 'yes']):
-	writers.append( FileWriter.FileWriter(Config) )
-
-# Check if mqtt logging is enabled in config file
-if ( Config.get("general", "mqtt_enabled").lower() in ['true', '1', 't', 'y', 'yes']):
-	writers.append( MQTTWriter.MQTTWriter(Config) )
-
-############ MAIN LOOP HERE ####################
 
 try:
+ # Initialize file writer
+ if ( Config.get("general", "write_to_file").lower() in ['true', '1', 't', 'y', 'yes']):
+    writers.append( FileWriter.FileWriter(Config) )
+
+ # Check if mqtt logging is enabled in config file
+ if ( Config.get("general", "mqtt_enabled").lower() in ['true', '1', 't', 'y', 'yes']):
+    writers.append( MQTTWriter.MQTTWriter(Config) )
+
+ ############ MAIN LOOP HERE ####################
+
 
  while(True):
 
@@ -126,7 +128,7 @@ try:
 		# Construct Data Dictionary object that will be passed to all available Writers
                 data = {};
                 data["utc"] = int(time.time())
-                data["sensor"] = "shower"
+                data["sensor"] = SHOWER_ID
                 data["session"]=startCounter
                 data["second"]=secs
                 data["temp"]=temp
