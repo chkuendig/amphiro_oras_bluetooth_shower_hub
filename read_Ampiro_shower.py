@@ -23,6 +23,9 @@ writers = []
 # Error counter is used to track how many disconnections in a row we are getting.
 errorCounter = 0
 
+# True/False Dictionary defining if last message of shower session was sent. (Indexed with mac address)
+lastMessageSent = {}
+
 MAC_ADDRESS=""
 uuids={
 	"name" :"00002a29-0000-1000-8000-00805f9b34fb",
@@ -31,6 +34,12 @@ uuids={
         "flow":"7f40c00f-504f-4c41-5261-6d706869726f",
         }
 
+
+def pause_with_dots(secs):
+  for x in range(5):
+     print(".", flush=True, end="")
+     sleep(1)
+  print("")
 
 print( datetime.now() )
 
@@ -43,11 +52,16 @@ Config.read(configFile)
 # Get Showers ID from config file.
 SHOWER_ID = Config.get("general", "shower_name")
 
+lastData = {}
+
 # Read shower MAC address and remove possible white space from config
 MAC_ADDRESSES= Config.get("general", "shower_mac_addresses").split(",")
 for i in range(len(MAC_ADDRESSES)):
   mac = MAC_ADDRESSES[i].strip()
   MAC_ADDRESSES[i] = mac
+  lastMessageSent[mac] = False
+  lastData[mac] = {}
+
 
 print("General settings[mac:" +str(MAC_ADDRESSES) + " id:"+SHOWER_ID+"] ", end="");
 
@@ -78,6 +92,7 @@ try:
 
     # Connection established if we got here. Reset error counter.
     errorCounter = 0
+    lastMessageSent[MAC_ADDRESS] = False
 
     # Just doing some double checking to make sure we got correct UUID's
     if ( chStatus.supportsRead() and chFlow.supportsRead() ):
@@ -145,11 +160,15 @@ try:
                 data["kwatts"]=kwatts
                 data["pulses"]=pulses
                 data["liters"]=round( pulses/2560, 2)
+                data["liters_rounded"]=round( pulses/2560 )
                 data["liters_delta"]= round( (pulses/2560) - previousLiters, 2)
                 data["flow"]=round( flow/1220, 2 )
                 data["f_c"]=flow
                 data["a"]=a
                 data["b"]=b
+
+		# Store last received data for later use.
+                lastData[MAC_ADDRESS] = data
 
 		# Save current listers to "previous liters" so we can calculate delta liters on next round
                 previousLiters = pulses/2560
@@ -157,24 +176,32 @@ try:
                 for i in range(len(writers)):
                    writers[i].write(data, v1, v2)
 
-                print("sleeping", end="")
-                for x in range(5):
-                  print(".", flush=True, end="")
-                  sleep(1)
-                print("")
+                print("sleeping", end="", flush=True)
+                pause_with_dots(5)
 
    except (BTLEDisconnectError,BTLEInternalError,IOError) as err:
      print("BLE Connection failed["+type(err).__name__+"]. ")
      errorCounter +=1
 
-     if (errorCounter < 10 ):
+     if (errorCounter <= 5 ):
        print("Reconnecting in 5 seconds", flush=True, end="")
-       for x in range(5):
-         print(".", flush=True, end="")
-         sleep(1)
+       pause_with_dots(5)
+
      else:
        print("[" + str(err) + "] ", end="")
        print("Shower seems to be offline. Sleeping for 60 seconds and trying to connect again.")
+
+       if (lastMessageSent[MAC_ADDRESS] == False):
+          print("Shower offline. Sending last event message.")
+          for i in range(len(writers)):
+             print(lastData[MAC_ADDRESS]);
+
+             if (len(lastData[MAC_ADDRESS]) > 0 ):
+               writers[i].writeLastMessage(data, v1, v2)
+             else:
+               print("Do data received yet. Not sending last message out.")
+          lastMessageSent[MAC_ADDRESS] = True
+
        sleep(60)
 
 #  except BaseException as err:
