@@ -1,7 +1,6 @@
 [general]
-# Specify should we write the data to file and which file?
-write_to_file=yes
-output_file=dump.txt
+# Specify should we write the data to file. (Define settings in file-section below)
+file_write_enabled=no
 
 # Do you want to enable MQTT. (Define settings in mqtt-section below.)
 mqtt_enabled=true
@@ -12,6 +11,16 @@ shower_mac_addresses=00:11:22:33:44:55
 
 # Id of your shower in MQTT messages. You only need to change this if you have multiple shower heads.
 shower_name=shower1
+
+[file]
+# Settings for file writing.
+
+# Define the output file where measurements are written.
+output_file=dump.txt
+
+# File where raw hex data is written. (Usually used only for debuffing purposes. Ok to leave commented out).
+raw_output_file=raw_dump.txt
+
 
 [mqtt]
 # Add your MQTT Settings in this mqtt section. 
