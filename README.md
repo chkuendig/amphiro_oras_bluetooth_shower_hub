@@ -13,6 +13,11 @@ I'm running this in small Raspberry PI Zero, but any Bluetooth enabled Linux sho
 - run `sudo python3 setup.py` to find out your showers mac address and create default **config.ini** for you.
 - run `./read_Ampiro_shower.sh` to start collecting data from your shower
 
+# HomeAssistant integration
+- Change the "mqtt_topic" in config.ini to provided HA value. This way provided configuration.yaml can be used as-is.
+- Enable MQTT Broker in your HomeAssistant installation.
+- Change MQTT-settings in config.ini to point into your HomeAssistant MQTT broker.
+- Use provided "home_assistant_example_configuration.yaml" in HomeAssistant.
 
 # Longer setup with explanations :) 
 
