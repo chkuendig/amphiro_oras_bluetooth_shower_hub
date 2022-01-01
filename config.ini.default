@@ -28,14 +28,15 @@ mqtt_topic=shower
 message_format={"utc": $utc, "sensor": "$sensor", "mac":"$mac", "tags": {"session":$session} ,"value": {"liters": $liters, "flow": $flow, "f_c": $f_c, "b": $b, "temp": $temp, "kwatts": $kwatts, "counter": $session, "second": $second, "liters_delta": $liters_delta, "pulses": $pulses, "a": $a} }
 
 
+##### Settings related to "Last Message" #####
+
 # If you also want to receive the last measurement at the end of the shower into another topic then enable this.
 # (Can be used to trigger feedback to user.)
-send_last_message=yes
-
-# This is the "last MQTT message" sent at the end of Shower session. (Only one message per shower session is sent.)
-# (Can be used to trigger user feedback or if you just want to collect the final results into another topic)
-last_message_format=$liters_rounded liters used
+send_last_message=no
 
 # MQTT topic used for sending out "last message".
 mqtt_topic_last=shower/speak
 
+# This is the "last MQTT message" format sent at the end of Shower session. (Only one message per shower session is sent.)
+# Content can be text, JSON what ever you want. Supports same variables as normal "message_format"
+last_message_format=$liters_rounded liters used.
