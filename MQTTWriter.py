@@ -11,6 +11,7 @@ class MQTTWriter(AbstractWriter):
     clientId = None
     mqtt_template = None
     mqttc = None
+    mqtt_topic = None
 
     def __init__(self, Config ):
       # Call abstract base class and pass the name of this sensor and name for the sensor
@@ -29,7 +30,9 @@ class MQTTWriter(AbstractWriter):
       mqtt_username= Config.get("mqtt", "mqtt_username")
       mqtt_password= Config.get("mqtt", "mqtt_password")
 
-      print("MQTT-settings[" + mqtt_host + ":" + str(mqtt_port) + " " + mqtt_username+"]")
+      self.mqtt_topic=Config.get("mqtt", "mqtt_topic")
+
+      print("MQTT-settings[" + mqtt_host + ":" + str(mqtt_port) + "] topic["+self.mqtt_topic+"]"  + " username[" + mqtt_username+"]")
 
       # Initialize MQTT and Initialize connection
       self.mqttc = mqtt.MqttClient( mqtt_host, mqtt_port, mqtt_username, mqtt_password, self.clientId )
@@ -41,4 +44,4 @@ class MQTTWriter(AbstractWriter):
            # Construct data and datavalue Dictionaries that will be sent to MQTT
            line = self.mqtt_template.substitute(mac=dataDict["mac"],sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], f_c=dataDict["f_c"], a=dataDict["a"], b=dataDict["b"] )
            print("- publishing MQTT:"+line+" ", end="")
-           self.mqttc.publish( "shower", line )
+           self.mqttc.publish( self.mqtt_topic, line )

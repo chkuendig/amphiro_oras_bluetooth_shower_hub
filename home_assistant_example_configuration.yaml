@@ -1,0 +1,48 @@
+- platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_counter"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: ""
+    value_template: "{{ value_json.value.counter }}"
+
+  - platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_liters"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: "l"
+    value_template: "{{ value_json.value.liters }}"
+
+  - platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_flow"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: "l/min"
+    value_template: "{{ value_json.value.flow }}"
+
+  - platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_temperature"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: "°C"
+    value_template: "{{ value_json.value.temp }}"
+
+  - platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_kwatts"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: "kW"
+    value_template: "{{ value_json.value.kwatts }}"
+
+  - platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_water_usage"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: "l"
+    value_template: "{{ value_json.value.pulses }}"
+
+  - platform: mqtt    
+    name: "mqtt_oras_ampiro_shower_time"
+    state_topic: "homeassistant/sensor/shower"
+    qos: 0
+    unit_of_measurement: "s"
+    value_template: "{{ value_json.value.pulses }}"

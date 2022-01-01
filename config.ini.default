@@ -20,5 +20,9 @@ mqtt_port=1883
 mqtt_username=username_here
 mqtt_password=add_password_here
 
+# change to value "homeassistant/sensor/shower" if you want to use the provided HomeAssistant.yaml
+# mqtt_topic=homeassistant/sensor/shower
+mqtt_topic=shower
+
 # This is the actual MQTT message that is sent as payload. Change this if you want to have different MQTT message format.
 message_format={"utc": $utc, "sensor": "$sensor", "tags": {"session":$session} ,"value": {"liters": $liters, "flow": $flow, "f_c": $f_c, "b": $b, "temp": $temp, "kwatts": $kwatts, "counter": $session, "second": $second, "liters_delta": $liters_delta, "pulses": $pulses, "a": $a} }
