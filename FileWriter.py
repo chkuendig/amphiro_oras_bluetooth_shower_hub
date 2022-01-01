@@ -17,7 +17,8 @@ class FileWriter(AbstractWriter):
         self.filename = Config.get("general", "output_file")
         self.fileHandle = open( self.filename, 'a')
 
-
+    def writeLastMessage(self, dataDict, rawData1, rawData2 ):
+      self.write(dataDict, rawData1, rawData2)
 
     # Write data to writers target (This is abstract method that is used to write data.)
     def write(self, dataDict, rawData1, rawData2 ):

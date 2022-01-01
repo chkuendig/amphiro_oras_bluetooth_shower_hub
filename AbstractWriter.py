@@ -14,3 +14,9 @@ class AbstractWriter(object):
     def write(self, dataDict, rawData1, rawData2 ):
         pass
 
+    # Write last message when shower session is over
+    # This is abstract method that inheriting classes must implement
+    @abc.abstractmethod
+    def writeLastMessage(self, dataDict, rawData1, rawData2 ):
+        pass
+
