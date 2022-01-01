@@ -67,7 +67,7 @@ print("General settings[mac:" +str(MAC_ADDRESSES) + " id:"+SHOWER_ID+"] ", end="
 
 try:
  # Initialize file writer
- if ( Config.get("general", "write_to_file").lower() in ['true', '1', 't', 'y', 'yes']):
+ if ( Config.get("general", "file_write_enabled").lower() in ['true', '1', 't', 'y', 'yes']):
     writers.append( FileWriter.FileWriter(Config) )
 
  # Check if mqtt logging is enabled in config file
