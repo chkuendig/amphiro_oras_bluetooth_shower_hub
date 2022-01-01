@@ -67,7 +67,12 @@ This will make sure that application is executed 20 seconds after reboot. (20 se
 # Roadmap
 
 Ideas to be implemented in the future:
-- Calculate your cumulated daily water consumption and add it into outgoing MQTT-messages
+- Calculate cumulated daily water consumption and add it into outgoing MQTT-messages.
+- Add support for reading multiple shower heads at the same time.
 
 # License
 This application is licensed under **[Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)**
+
+# Improvements
+- 1.1.2021 Added support for "Last Message" that is sent out when Shower session ends. Useful if you want to receive summary at different MQTT topic that the actual readings. (Could also be used to send out user feedback at the end of the shower)
+- 31.12.2021 Added support for trying to connect into multiple shower heads. (Can't read them simultaniously, but getting here).
