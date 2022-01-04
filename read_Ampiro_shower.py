@@ -142,10 +142,10 @@ try:
                 v2 += str(valFlow)[0:6] + " "
                 v2 += str(valFlow)[6:10] + " "
 
-                flow = int( valFlow[8:12],16 )
+                flowPulses = int( valFlow[8:12],16 )
                 v2 += str(valFlow)[10:14] + " "
 
-                b = int( valFlow[12:16],16 )
+                temperaturePulses = int( valFlow[12:16],16 )
                 v2 += str(valFlow)[14:18] + " "
                 v2 += str(valFlow)[18:]
 
@@ -162,10 +162,10 @@ try:
                 data["liters"]=round( pulses/2560, 2)
                 data["liters_rounded"]=round( pulses/2560 )
                 data["liters_delta"]= round( (pulses/2560) - previousLiters, 2)
-                data["flow"]=round( flow/1220, 2 )
-                data["f_c"]=flow
+                data["flow"]=round( flowPulses/1220, 2 )
+                data["flow_pulses"]=flowPulses
                 data["a"]=a
-                data["b"]=b
+                data["temperature_pulses"]=temperaturePulses
 
 		# Store last received data for later use.
                 lastData[MAC_ADDRESS] = data
@@ -183,14 +183,8 @@ try:
      print("BLE Connection failed["+type(err).__name__+"]. ")
      errorCounter +=1
 
-     if (errorCounter <= 5 ):
-       print("Reconnecting in 5 seconds", flush=True, end="")
-       pause_with_dots(5)
-
-     else:
-       print("[" + str(err) + "] ", end="")
-       print("Shower seems to be offline. Sleeping for 60 seconds and trying to connect again.")
-
+     # After two failed connection attempts we send "last message" out.
+     if (errorCounter == 3 ):
        if (lastMessageSent[MAC_ADDRESS] == False):
           print("Shower offline. Sending last event message.")
           for i in range(len(writers)):
@@ -202,7 +196,16 @@ try:
                print("Do data received yet. Not sending last message out.")
           lastMessageSent[MAC_ADDRESS] = True
 
-       sleep(60)
+
+     if (errorCounter <= 5 ):
+       print("Reconnecting in 5 seconds", flush=True, end="")
+       pause_with_dots(5)
+
+     else:
+       print("[" + str(err) + "] ", end="")
+       print("Shower seems to be offline. Sleeping for 30 seconds and trying to connect again.")
+
+       sleep(30)
 
 #  except BaseException as err:
 #      print(err)

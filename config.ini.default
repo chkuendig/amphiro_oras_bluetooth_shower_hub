@@ -34,8 +34,7 @@ mqtt_password=add_password_here
 mqtt_topic=shower
 
 # This is the actual MQTT message that is sent as payload. Change this if you want to have different MQTT message format.
-message_format={"utc": $utc, "sensor": "$sensor", "mac":"$mac", "tags": {"session":$session} ,"value": {"liters": $liters, "flow": $flow, "f_c": $f_c, "b": $b, "temp": $temp, "kwatts": $kwatts, "counter": $session, "second": $second, "liters_delta": $liters_delta, "pulses": $pulses, "a": $a} }
-
+message_format={"utc": $utc, "sensor": "$sensor", "mac":"$mac", "tags": {"session":$session} ,"value": {"liters": $liters, "flow": $flow, "flow_pulses": $flow_pulses, "temperature_pulses": $temperature_pulses, "temp": $temp, "kwatts": $kwatts, "counter": $session, "second": $second, "liters_delta": $liters_delta, "pulses": $pulses, "a": $a} }
 
 ##### Settings related to "Last Message" #####
 

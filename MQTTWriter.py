@@ -50,13 +50,13 @@ class MQTTWriter(AbstractWriter):
     def writeLastMessage(self, dataDict, rawData1, rawData2 ):
          if ( self.send_last_message == True ):
              # Construct data and datavalue Dictionaries that will be sent to MQTT
-             line = self.mqtt_template_last.substitute(mac=dataDict["mac"],sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters_rounded=dataDict["liters_rounded"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], f_c=dataDict["f_c"], a=dataDict["a"], b=dataDict["b"] )
+             line = self.mqtt_template_last.substitute(mac=dataDict["mac"],sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters_rounded=dataDict["liters_rounded"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], flow_pulses=dataDict["flow_pulses"], a=dataDict["a"], temperature_pulses=dataDict["temperature_pulses"] )
              print("- publishing Last MQTT message:"+line+" ", end="")
              self.mqttc.publish( self.mqtt_topic_last, line )
 
     # Write data to writers target (This is abstract method that is used to write data.)
     def write(self, dataDict, rawData1, rawData2 ):
            # Construct data and datavalue Dictionaries that will be sent to MQTT
-           line = self.mqtt_template.substitute(mac=dataDict["mac"],sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters_rounded=dataDict["liters_rounded"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], f_c=dataDict["f_c"], a=dataDict["a"], b=dataDict["b"] )
+           line = self.mqtt_template.substitute(mac=dataDict["mac"],sensor=dataDict["sensor"], utc=dataDict["utc"]  , second=dataDict["second"], session=dataDict["session"], temp=dataDict["temp"], kwatts=dataDict["kwatts"],pulses=dataDict["pulses"],liters_rounded=dataDict["liters_rounded"],liters=dataDict["liters"], liters_delta=dataDict["liters_delta"], flow=dataDict["flow"], flow_pulses=dataDict["flow_pulses"], a=dataDict["a"], temperature_pulses=dataDict["temperature_pulses"] )
            print("- publishing MQTT:"+line+" ", end="")
            self.mqttc.publish( self.mqtt_topic, line )
